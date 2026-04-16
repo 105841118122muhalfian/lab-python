@@ -1,56 +1,99 @@
+"""
+==========================================================
+ TUGAS 2 - Analisis Data Mahasiswa dengan Pandas
+ Chapter 5: NumPy & Pandas
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat DataFrame 20 mahasiswa dengan kolom:
+    Nama, NIM, Jurusan (3 pilihan), Semester (2-8),
+    IPK (2.0-4.0), Jenis_Kelamin (L/P)
+ 2. Tampilkan info dasar: shape, dtypes, describe()
+ 3. Filter: mahasiswa IPK >= 3.5
+ 4. Filter: Jurusan "Informatika" DAN semester >= 5
+ 5. Sorting: urutkan berdasarkan IPK (descending), ambil top 5
+ 6. Groupby: statistik IPK per jurusan (mean, min, max, count)
+ 7. Groupby: jumlah mahasiswa per jenis_kelamin per jurusan
+ 8. Tambah kolom Predikat berdasarkan IPK
+ 9. Hitung distribusi predikat dengan value_counts()
 
-import math
+ Predikat:
+ | IPK >= 3.5 | Cum Laude          |
+ | IPK >= 3.0 | Sangat Memuaskan   |
+ | IPK >= 2.5 | Memuaskan          |
+ | IPK <  2.5 | Cukup              |
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+import pandas as pd
+import numpy as np
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Menentukan seed agar hasil random konsisten
+np.random.seed(42)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# 1. Buat DataFrame berisi data 20 mahasiswa
+n = 20
+jurusan_list = ['Informatika', 'Sistem Informasi', 'Teknik Elektro']
 
-# ── Perhitungan ──────────────────────────────────────────
+data = {
+    'Nama': [f'Mahasiswa_{i}' for i in range(1, n+1)],
+    'NIM': [f'10584110{i:02d}' for i in range(1, n+1)],
+    'Jurusan': np.random.choice(jurusan_list, n),
+    'Semester': np.random.randint(2, 9, n),
+    'IPK': np.round(np.random.uniform(2.0, 4.0, n), 2),
+    'Jenis_Kelamin': np.random.choice(['L', 'P'], n)
+}
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+df = pd.DataFrame(data)
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Sisipkan nama Safriamsah ke dalam data agar sesuai identitas kamu
+df.loc[0, 'Nama'] = 'Safriamsah'
+df.loc[0, 'Jurusan'] = 'Informatika'
+df.loc[0, 'IPK'] = 3.17
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+print("===== DATA MAHASISWA =====")
+print(df.head())
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+# 2. Tampilkan informasi dasar
+print("\n--- Informasi Dasar ---")
+print(f"Shape: {df.shape}")
+print("\nData Types:")
+print(df.dtypes)
+print("\nStatistik Deskriptif:")
+print(df.describe())
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# 3. Filtering
+print("\n--- Filtering: IPK >= 3.5 ---")
+print(df[df['IPK'] >= 3.5])
+
+print("\n--- Filtering: Informatika & Semester >= 5 ---")
+filt = (df['Jurusan'] == 'Informatika') & (df['Semester'] >= 5)
+print(df[filt])
+
+# 4. Sorting: 5 Teratas berdasarkan IPK
+print("\n--- Top 5 IPK Tertinggi ---")
+print(df.sort_values(by='IPK', ascending=False).head(5))
+
+# 5. Groupby: Statistik IPK per Jurusan
+print("\n--- Statistik IPK per Jurusan ---")
+stat_jurusan = df.groupby('Jurusan')['IPK'].agg(['mean', 'min', 'max', 'count'])
+print(stat_jurusan)
+
+# 6. Groupby: Jenis Kelamin per Jurusan
+print("\n--- Jumlah Mahasiswa per Jenis Kelamin per Jurusan ---")
+print(df.groupby(['Jurusan', 'Jenis_Kelamin']).size())
+
+# 7. Tambahkan kolom baru Predikat
+def tentukan_predikat(ipk):
+    if ipk >= 3.5: return "Cum Laude"
+    elif ipk >= 3.0: return "Sangat Memuaskan"
+    elif ipk >= 2.5: return "Memuaskan"
+    else: return "Cukup"
+
+df['Predikat'] = df['IPK'].apply(tentukan_predikat)
+
+# 8. Tampilkan distribusi predikat
+print("\n--- Distribusi Predikat ---")
+print(df['Predikat'].value_counts())

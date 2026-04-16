@@ -1,56 +1,44 @@
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+#==========================================================
+ #TUGAS 3 - Analisis Teks dengan Set
+ #Chapter 2: Struktur Data
+ #Laboratorium Python & Dasar AI
+ #Universitas Muhammadiyah Makassar
+#==========================================================
 
-import math
+# Definisikan 2 buah string kalimat
+kalimat1 = "belajar pemrograman python sangat menyenangkan dan bermanfaat untuk masa depan mahasiswa"
+kalimat2 = "mahasiswa informatika harus belajar logika pemrograman agar mahir membuat aplikasi bermanfaat"
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# Konversi ke set berisi kata-kata unik (lowercase)
+# .lower() untuk mengecilkan huruf, .split() untuk memecah kalimat menjadi list kata
+set1 = set(kalimat1.lower().split())
+set2 = set(kalimat2.lower().split())
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+print("Kalimat 1:", kalimat1)
+print("Kalimat 2:", kalimat2)
+print("-" * 30)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# Kata yang muncul di kedua kalimat (Intersection)
+irisan = set1.intersection(set2)
+print(f"Kata di kedua kalimat (Intersection): \n{irisan}")
 
-# ── Perhitungan ──────────────────────────────────────────
+# Kata yang hanya ada di kalimat pertama (Difference)
+hanya_set1 = set1.difference(set2)
+print(f"\nKata hanya di kalimat pertama: \n{hanya_set1}")
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# Kata yang hanya ada di kalimat kedua (Difference)
+hanya_set2 = set2.difference(set1)
+print(f"\nKata hanya di kalimat kedua: \n{hanya_set2}")
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Semua kata unik dari kedua kalimat (Union)
+gabungan = set1.union(set2)
+print(f"\nSemua kata unik (Union): \n{gabungan}")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+# Kata yang hanya ada di salah satu kalimat (Symmetric Difference)
+simetris_diff = set1.symmetric_difference(set2)
+print(f"\nKata di salah satu kalimat saja (Symmetric Difference): \n{simetris_diff}")
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
-
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# Hitung jumlah kata unik total
+print("-" * 30)
+print(f"Jumlah kata unik total: {len(gabungan)}")

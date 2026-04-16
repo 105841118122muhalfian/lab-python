@@ -1,56 +1,111 @@
+"""
+==========================================================
+ TUGAS 2 - Sistem Akademik dengan Inheritance
+ Chapter 4: Object-Oriented Programming
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat class Orang (parent) dengan atribut: nama, umur, alamat
+ 2. Buat class Mahasiswa(Orang) dengan atribut: nim, jurusan, semester,
+    daftar_mk; method: tambah_mk, hitung_ipk, info (override)
+ 3. Buat class Dosen(Orang) dengan atribut: nidn, bidang_keahlian,
+    daftar_mk_diampu; method: tambah_mk_diampu, info (override)
+ 4. Buat class Asisten(Mahasiswa) dengan atribut: lab, dosen_pembimbing
+ 5. Demonstrasikan polymorphism, isinstance(), dan issubclass()
 
-import math
+ Konsep yang dipelajari:
+ - Inheritance (pewarisan) single & multilevel
+ - Method overriding
+ - super() untuk memanggil parent constructor
+ - Polymorphism (method yang sama, perilaku berbeda)
+ - isinstance() dan issubclass()
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Tugas 2 -- Sistem Akademik dengan Inheritance (tugas_02.py)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# Class Induk Orang
+class Orang:
+    def __init__(self, nama, umur, alamat):
+        self.nama = nama
+        self.umur = umur
+        self.alamat = alamat
 
-# ── Perhitungan ──────────────────────────────────────────
+    def info(self):
+        return f"Nama: {self.nama} | Umur: {self.umur} | Alamat: {self.alamat}"
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# Class Mahasiswa (Turunan Orang)
+class Mahasiswa(Orang):
+    def __init__(self, nama, umur, alamat, nim, jurusan, semester):
+        super().__init__(nama, umur, alamat)
+        self.nim = nim
+        self.jurusan = jurusan
+        self.semester = semester
+        self.daftar_mk = []
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+    def tambah_mk(self, mata_kuliah, nilai):
+        self.daftar_mk.append({"mata_kuliah": mata_kuliah, "nilai": nilai})
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+    def hitung_ipk(self):
+        if not self.daftar_mk:
+            return 0.0
+        total_nilai = sum(item['nilai'] for item in self.daftar_mk)
+        return total_nilai / len(self.daftar_mk)
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+    def info(self):
+        return f"[Mahasiswa] NIM: {self.nim} | {self.nama} | Jurusan: {self.jurusan} | IPK: {self.hitung_ipk():.2f}"
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# Class Dosen (Turunan Orang)
+class Dosen(Orang):
+    def __init__(self, nama, umur, alamat, nidn, bidang):
+        super().__init__(nama, umur, alamat)
+        self.nidn = nidn
+        self.bidang = bidang
+        self.daftar_mk_diampu = []
+
+    def tambah_mk_diampu(self, mata_kuliah):
+        self.daftar_mk_diampu.append(mata_kuliah)
+
+    def info(self):
+        return f"[Dosen] NIDN: {self.nidn} | {self.nama} | Keahlian: {self.bidang}"
+
+# Class Asisten (Turunan Mahasiswa)
+class Asisten(Mahasiswa):
+    def __init__(self, nama, umur, alamat, nim, jurusan, semester, lab, dosen_pembimbing):
+        super().__init__(nama, umur, alamat, nim, jurusan, semester)
+        self.lab = lab
+        self.dosen_pembimbing = dosen_pembimbing
+
+    def info(self):
+        # Menggabungkan info Mahasiswa dengan info Lab
+        info_mhs = super().info()
+        return f"{info_mhs} | [Asisten Lab: {self.lab}]"
+
+# --- Demonstrasi ---
+
+# Inisialisasi Objek
+mhs1 = Mahasiswa("Luthfi", 22, "Makassar", "10584110", "Informatika", 8)
+mhs1.tambah_mk("Data Mining", 85)
+mhs1.tambah_mk("Machine Learning", 90)
+
+dsn1 = Dosen("Dr. Ahmad", 45, "Jl. Sultan Alauddin", "0912345", "Kecerdasan Buatan")
+dsn1.tambah_mk_diampu("Pemrograman Python")
+
+ast1 = Asisten("Ciko", 20, "Lab Unismuh", "10584111", "Informatika", 4, "Lab Robotik", dsn1.nama)
+
+# Demonstrasi Polymorphism
+print("===== DEMONSTRASI POLYMORPHISM =====")
+civitas_akademika = [mhs1, dsn1, ast1]
+
+for orang in civitas_akademika:
+    print(orang.info())
+
+# Demonstrasi isinstance() dan issubclass()
+print("\n===== CEK RELASI CLASS =====")
+print(f"Apakah ast1 adalah Mahasiswa? {isinstance(ast1, Mahasiswa)}")
+print(f"Apakah Asisten adalah sub-class dari Orang? {issubclass(Asisten, Orang)}")
+print(f"Apakah Dosen adalah sub-class dari Mahasiswa? {issubclass(Dosen, Mahasiswa)}")
+    pass

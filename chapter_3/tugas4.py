@@ -1,56 +1,89 @@
+"""
+==========================================================
+ TUGAS 4 - Permainan Tebak Angka
+ Chapter 3: Control Flow & Fungsi
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat fungsi yang menghasilkan angka acak 1-100 (import random)
+ 2. Buat while loop untuk tebak angka (gunakan input())
+ 3. Berikan petunjuk "Terlalu besar!" / "Terlalu kecil!"
+ 4. Hitung dan tampilkan jumlah percobaan saat berhasil
+ 5. Gunakan break untuk keluar saat tebakan benar
+ 6. Batas maksimal 10 percobaan, tampilkan "Game Over" jika gagal
+ 7. Buat fungsi rekursif tebak_rekursif sebagai alternatif
 
-import math
+ Catatan: Tugas ini interaktif (menggunakan input()).
+          Sertakan screenshot saat menjalankan program.
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+import random
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Fungsi menghasilkan angka acak
+def generate_angka():
+    return random.randint(1, 100)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# Fungsi Versi Iteratif (While Loop)
+def main_game():
+    target = generate_angka()
+    percobaan = 0
+    maks_percobaan = 10
+    
+    print("=== PERMAINAN TEBAK ANGKA (ITERATIF) ===")
+    print("Saya sudah memikirkan angka antara 1-100.")
+    print(f"Kamu punya {maks_percobaan} kesempatan!")
 
-# ── Perhitungan ──────────────────────────────────────────
+    # While Loop untuk meminta input
+    while percobaan < maks_percobaan:
+        percobaan += 1
+        try:
+            tebakan = int(input(f"\nPercobaan ke-{percobaan}: Masukkan tebakanmu: "))
+        except ValueError:
+            print("Masukkan angka yang valid!")
+            percobaan -= 1 # Tidak menghitung percobaan jika input salah
+            continue
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+    # Memberikan petunjuk
+        if tebakan < target:
+            print("Terlalu kecil!")
+        elif tebakan > target:
+            print("Terlalu besar!")
+        else:
+    # Menampilkan hasil dan Break
+            print(f"SELAMAT! Kamu berhasil menebak angka {target} dalam {percobaan} percobaan.")
+            break
+    
+    # Penanganan Game Over
+    else:
+        print("\n=== GAME OVER ===")
+        print(f"Maaf, kamu gagal. Angka yang benar adalah {target}.")
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Fungsi Rekursif sebagai alternatif
+def tebak_rekursif(target, percobaan=1, maks=10):
+    if percobaan > maks:
+        print(f"\n[Rekursif] Game Over! Jawabannya adalah {target}")
+        return
+    
+    try:
+        tebakan = int(input(f"[Rekursif] Percobaan {percobaan}: "))
+    except ValueError:
+        return tebak_rekursif(target, percobaan, maks)
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+    if tebakan == target:
+        print(f"Benar! Kamu menang di percobaan ke-{percobaan}")
+    elif tebakan < target:
+        print("Terlalu kecil!")
+        tebak_rekursif(target, percobaan + 1, maks)
+    else:
+        print("Terlalu besar!")
+        tebak_rekursif(target, percobaan + 1, maks)
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
-
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# Jalankan Program
+if __name__ == "__main__":
+    main_game()
+    # Jika ingin mencoba versi rekursif, hapus tanda pagar di bawah:
+    # print("\n\n--- Beralih ke Versi Rekursif ---")
+    # tebak_rekursif(random.randint(1,100))

@@ -1,56 +1,78 @@
+"""
+==========================================================
+ TUGAS 1 - Manajemen Nilai Mahasiswa
+ Chapter 2: Struktur Data
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat sebuah list berisi 10 nilai ujian (integer, range 0-100)
+ 2. Tampilkan: nilai tertinggi, terendah, rata-rata (hitung manual)
+ 3. Urutkan list dari terkecil ke terbesar
+ 4. Gunakan list comprehension untuk filter nilai >= 70 (lulus)
+ 5. Hitung jumlah mahasiswa lulus dan tidak lulus
+ 6. Tambahkan 2 nilai baru (append), hapus nilai terkecil (remove)
+==========================================================
+"""
 
-import math
+# ===== MANAJEMEN NILAI MAHASISWA =====
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# 1. Inisialisasi list nilai
+nilai = [85, 60, 92, 45, 78, 55, 90, 73, 68, 88]
+print("===== MANAJEMEN NILAI MAHASISWA =====")
+print(f"Nilai awal   : {nilai}")
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# 2. Hitung tertinggi, terendah, dan rata-rata secara manual
+tertinggi = nilai[0]
+terendah = nilai[0]
+total = 0
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+for n in nilai:
+    if n > tertinggi:
+        tertinggi = n
+    if n < terendah:
+        terendah = n
+    total += n
 
-# ── Perhitungan ──────────────────────────────────────────
+rata_rata = total / len(nilai)
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# --- PERBAIKAN DI SINI ---
+print(f"Tertinggi    : {tertinggi}")
+print(f"Terendah     : {terendah}") # Sudah diperbaiki dari 'terterendah'
+print(f"Rata-rata    : {rata_rata}")
+# -------------------------
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# 3. Urutkan list (kecil ke besar)
+nilai_urut = sorted(nilai)
+print(f"Nilai sorted : {nilai_urut}")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+# 4. List comprehension untuk nilai >= 70
+nilai_lulus = [n for n in nilai if n >= 70]
+print(f"Nilai lulus  : {nilai_lulus}")
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+# 5. Hitung jumlah lulus dan tidak lulus
+jml_lulus = len(nilai_lulus)
+jml_tidak_lulus = len(nilai) - jml_lulus
+print(f"Lulus: {jml_lulus} | Tidak lulus: {jml_tidak_lulus}")
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# 6. Tambahkan 2 nilai baru dan hapus nilai terkecil
+nilai.append(95)
+nilai.append(40)
+
+# Cari nilai terkecil yang baru untuk dihapus secara manual
+min_baru = nilai[0]
+for n in nilai:
+    if n < min_baru:
+        min_baru = n
+
+nilai.remove(min_baru)
+print(f"List Final   : {nilai}")
+
+# ── Tampilkan Hasil ──────────────────────────────────────────────────────────
+# TODO: Tampilkan semua hasil dengan format rapi
+# Contoh:
+# print("===== MANAJEMEN NILAI MAHASISWA =====")
+# print(f"Nilai awal   : {nilai}")
+# print(f"Tertinggi    : {nilai_tertinggi}")
+# ...

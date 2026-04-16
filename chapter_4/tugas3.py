@@ -1,56 +1,137 @@
+"""
+==========================================================
+ TUGAS 3 - Sistem Keuangan dengan Encapsulation
+ Chapter 4: Object-Oriented Programming
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat class Rekening dengan access modifier:
+    - Private: __saldo, __pin, __riwayat_transaksi
+    - Protected: _nomor_rekening, _pemilik
+    - Public: bank
+ 2. Implementasikan @property untuk saldo (read-only)
+    dan pemilik (dengan setter validation)
+ 3. Implementasikan method: setor, tarik, transfer,
+    cek_riwayat, ganti_pin (semua memerlukan verifikasi PIN)
+ 4. Demonstrasikan error saat mengakses atribut private
+ 5. Buat minimal 2 objek Rekening dan lakukan transaksi
 
-import math
+ Konsep yang dipelajari:
+ - Access modifier (public, protected, private)
+ - Name mangling (double underscore)
+ - Property decorator (@property, @setter)
+ - Data validation dalam setter
+ - Encapsulation untuk keamanan data
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Tugas 3 -- Sistem Keuangan dengan Encapsulation (tugas_03.py)
+from datetime import datetime
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+class Rekening:
+    def __init__(self, nomor, pemilik, pin_awal, saldo_awal=0):
+        # Public Attribute
+        self.bank = "Bank Unismuh Syariah"
+        
+        # Protected Attribute
+        self._nomor_rekening = nomor
+        self._pemilik = pemilik
+        
+        # Private Attribute (Gunakan __ untuk enkapsulasi)
+        self.__saldo = saldo_awal
+        self.__pin = pin_awal
+        self.__riwayat_transaksi = [f"Pembukaan rekening: +{saldo_awal}"]
 
-# ── Perhitungan ──────────────────────────────────────────
+    # Getter untuk Saldo (Read-only)
+    @property
+    def saldo(self):
+        return self.__saldo
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+    # Getter & Setter untuk Pemilik
+    @property
+    def pemilik(self):
+        return self._pemilik
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+    @pemilik.setter
+    def pemilik(self, nama_baru):
+        if nama_baru.strip():
+            self._pemilik = nama_baru
+        else:
+            print("Error: Nama tidak boleh kosong!")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+    # Method Setor
+    def setor(self, jumlah, pin):
+        if pin == self.__pin:
+            self.__saldo += jumlah
+            self.__riwayat_transaksi.append(f"Setor tunai: +{jumlah}")
+            print(f"Setoran Rp{jumlah} berhasil!")
+        else:
+            print("PIN Salah! Transaksi setor gagal.")
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+    # Method Tarik
+    def tarik(self, jumlah, pin):
+        if pin == self.__pin:
+            if jumlah <= self.__saldo:
+                self.__saldo -= jumlah
+                self.__riwayat_transaksi.append(f"Tarik tunai: -{jumlah}")
+                print(f"Penarikan Rp{jumlah} berhasil!")
+            else:
+                print("Saldo tidak mencukupi!")
+        else:
+            print("PIN Salah! Transaksi tarik gagal.")
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+    # Method Transfer (Penyebab error biasanya di sini)
+    def transfer(self, tujuan, jumlah, pin):
+        if pin == self.__pin:
+            if jumlah <= self.__saldo:
+                self.__saldo -= jumlah
+                # Memanggil method helper di objek tujuan
+                tujuan._terima_transfer(jumlah, self._pemilik)
+                self.__riwayat_transaksi.append(f"Transfer ke {tujuan.pemilik}: -{jumlah}")
+                print(f"Transfer ke {tujuan.pemilik} sebesar Rp{jumlah} BERHASIL!")
+            else:
+                print("Saldo tidak mencukupi untuk transfer!")
+        else:
+            print("PIN Salah! Transfer dibatalkan.")
+
+    # Helper method (Internal untuk urusan transfer)
+    def _terima_transfer(self, jumlah, pengirim):
+        self.__saldo += jumlah
+        self.__riwayat_transaksi.append(f"Terima transfer dari {pengirim}: +{jumlah}")
+
+    def cek_riwayat(self, pin):
+        if pin == self.__pin:
+            print(f"\n--- RIWAYAT TRANSAKSI: {self._pemilik} ---")
+            for log in self.__riwayat_transaksi:
+                print(f"[{datetime.now().strftime('%d/%m/%Y')}] {log}")
+            print(f"Saldo Akhir: Rp{self.__saldo}")
+        else:
+            print("PIN Salah! Akses riwayat ditolak.")
+
+# --- DEMONSTRASI PROGRAM ---
+
+# 1. Inisialisasi Objek
+rek_safri = Rekening("1058411", "Safriamsah", "123456", 500000)
+rek_ciko = Rekening("1058412", "Ciko", "000000", 100000)
+
+print(f"Selamat Datang di {rek_safri.bank}")
+
+# 2. Pembuktian Enkapsulasi (Try-Except)
+print("\n[Uji Enkapsulasi]")
+try:
+    # Ini akan memicu AttributeError karena __saldo bersifat private
+    print(rek_safri.__saldo)
+except AttributeError:
+    print("Suksess: Atribut __saldo tidak bisa diakses langsung (Private)!")
+
+# 3. Jalankan Operasi
+print("\n[Menjalankan Transaksi]")
+rek_safri.setor(200000, "123456")         # Setor 200rb
+rek_safri.transfer(rek_ciko, 150000, "123456") # Transfer 150rb ke Ciko
+
+# 4. Tampilkan Hasil Akhir
+rek_safri.cek_riwayat("123456")
+rek_ciko.cek_riwayat("000000")

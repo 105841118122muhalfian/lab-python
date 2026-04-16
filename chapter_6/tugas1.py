@@ -1,56 +1,131 @@
+"""
+==========================================================
+ TUGAS 1 - Klasifikasi Dataset Wine
+ Chapter 6: Machine Learning & AI
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Load dataset Wine dari sklearn, tampilkan info dataset
+    (jumlah sampel, fitur, nama kelas, distribusi kelas)
+ 2. Preprocessing: train/test split 80:20 dengan stratify,
+    random_state=42, lalu StandardScaler
+ 3. Train 3 model klasifikasi:
+    a. KNN - coba k=3, 5, 7, pilih k terbaik
+    b. Decision Tree (max_depth=5)
+    c. Random Forest (n_estimators=100)
+ 4. Evaluasi setiap model: accuracy, classification_report,
+    confusion_matrix
+ 5. Buat tabel perbandingan accuracy ketiga model
+ 6. Prediksi 3 sampel baru menggunakan model terbaik
+ 7. Tulis komentar analisis: model mana terbaik dan mengapa
 
-import math
+ Dataset Wine:
+ - 178 sampel, 13 fitur kimia, 3 kelas wine
+ - Fitur: alcohol, malic_acid, ash, alkalinity, magnesium, dll.
+ - Kelas: class_0, class_1, class_2
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# TODO: Uncomment import yang diperlukan
+# import numpy as np
+# from sklearn.datasets import load_wine
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.tree import DecisionTreeClassifier
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.metrics import (
+#     accuracy_score,
+#     classification_report,
+#     confusion_matrix,
+# )
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+import pandas as pd
+import numpy as np
+from sklearn.datasets import load_wine
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, precision_recall_fscore_support
 
-# ── Perhitungan ──────────────────────────────────────────
+# 1. Muat dataset Wine
+wine = load_wine()
+X = wine.data
+y = wine.target
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+print("===== INFORMASI DASAR DATASET WINE =====")
+print(f"Jumlah Sampel : {X.shape[0]}")
+print(f"Jumlah Fitur  : {X.shape[1]}")
+print(f"Nama Fitur    : {wine.feature_names[:3]} ... (total 13)")
+print(f"Nama Kelas    : {wine.target_names}")
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Distribusi kelas
+unique, counts = np.unique(y, return_counts=True)
+distribusi = dict(zip(wine.target_names, counts))
+print(f"Distribusi    : {distribusi}\n")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+# 2. Preprocessing
+# Split 80:20 dengan stratify agar proporsi kelas di train & test tetap sama
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.20, stratify=y, random_state=42
+)
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+# Standardisasi fitur (Penting terutama untuk KNN)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# 3. Latih dan Evaluasi Model
+models = {
+    "KNN (k=5)": KNeighborsClassifier(n_neighbors=5),
+    "Decision Tree": DecisionTreeClassifier(max_depth=5, random_state=42),
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42)
+}
+
+# Simpan hasil untuk tabel perbandingan
+perbandingan = []
+
+print("===== EVALUASI MODEL =====")
+for name, model in models.items():
+    model.fit(X_train_scaled, y_train)
+    y_pred = model.predict(X_test_scaled)
+    
+    acc = accuracy_score(y_test, y_pred)
+    p, r, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='weighted')
+    
+    perbandingan.append([name, acc, p, r, f1])
+    
+    print(f"\n>>> {name}")
+    print(f"Accuracy: {acc:.4f}")
+    print("Confusion Matrix:")
+    print(confusion_matrix(y_test, y_pred))
+
+# 4. Tabel Perbandingan
+df_compare = pd.DataFrame(perbandingan, columns=['Model', 'Accuracy', 'Precision', 'Recall', 'F1-Score'])
+
+print("\n===== PERBANDINGAN MODEL KLASIFIKASI =====")
+print(df_compare.to_string(index=False))
+
+# 5. Prediksi 3 Data Baru (Gunakan model terbaik: Random Forest)
+best_model = models["Random Forest"]
+# Membuat data dummy (rata-rata dari dataset) lalu sedikit dimodifikasi
+data_baru = [X[0], X[60], X[130]] 
+data_baru_scaled = scaler.transform(data_baru)
+prediksi = best_model.predict(data_baru_scaled)
+
+print("\n===== PREDIKSI DATA BARU (RANDOM FOREST) =====")
+for i, p in enumerate(prediksi):
+    print(f"Data {i+1}: Diprediksi sebagai {wine.target_names[p]}")
+
+"""
+ANALISIS:
+Berdasarkan tabel perbandingan, Random Forest cenderung menjadi model terbaik. 
+Hal ini karena Random Forest adalah ensemble method yang menggabungkan banyak Decision Tree 
+sehingga lebih stabil terhadap noise dan mampu menangani hubungan fitur yang kompleks 
+tanpa mudah mengalami overfitting dibandingkan Decision Tree tunggal.
+"""

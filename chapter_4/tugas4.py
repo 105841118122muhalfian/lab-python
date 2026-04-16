@@ -1,56 +1,150 @@
+"""
+==========================================================
+ TUGAS 4 - Class Bangun Ruang
+ Chapter 4: Object-Oriented Programming
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat class BangunRuang (parent) dengan method abstract:
+    volume(), luas_permukaan(), info()
+ 2. Buat subclass: Kubus, Balok, Tabung, Bola
+ 3. Implementasikan @classmethod sebagai alternative constructor
+    (contoh: Kubus.dari_volume(vol) -> buat Kubus dari volume)
+ 4. Implementasikan @staticmethod untuk validasi
+    (contoh: Kubus.is_valid(sisi) -> True jika sisi > 0)
+ 5. Overload operator __gt__ (>) untuk perbandingan volume
+ 6. Urutkan list campuran bangun ruang berdasarkan volume
+    menggunakan sorted() + lambda
 
-import math
+ Konsep yang dipelajari:
+ - Abstract class dan method (tanpa ABC, gunakan raise)
+ - @classmethod dan @staticmethod
+ - Operator overloading (__gt__, __eq__, __lt__)
+ - Polymorphism dalam sorted() + lambda
+ - Rumus: pi = 3.14159265358979
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+ Rumus Bangun Ruang:
+ | Bangun | Volume              | Luas Permukaan          |
+ |--------|---------------------|-------------------------|
+ | Kubus  | s^3                 | 6 * s^2                 |
+ | Balok  | p * l * t           | 2 * (pl + pt + lt)      |
+ | Tabung | pi * r^2 * t        | 2 * pi * r * (r + t)    |
+ | Bola   | 4/3 * pi * r^3      | 4 * pi * r^2            |
+==========================================================
+"""
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Tugas 4 -- Class Bangun Ruang (tugas_04.py)
+from abc import ABC, abstractmethod
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+class BangunRuang(ABC):
+    @abstractmethod
+    def volume(self):
+        pass
 
-# ── Perhitungan ──────────────────────────────────────────
+    @abstractmethod
+    def luas_permukaan(self):
+        pass
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+    @abstractmethod
+    def info(self):
+        pass
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+    # Overload operator > untuk membandingkan volume
+    def __gt__(self, other):
+        if isinstance(other, BangunRuang):
+            return self.volume() > other.volume()
+        return NotImplemented
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+class Kubus(BangunRuang):
+    def __init__(self, sisi):
+        self.sisi = sisi
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+    @staticmethod
+    def is_valid(sisi):
+        return sisi > 0
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+    @classmethod
+    def dari_volume(cls, vol):
+        # s = akar pangkat 3 dari volume
+        sisi = vol ** (1/3)
+        return cls(round(sisi, 2))
+
+    def volume(self):
+        return self.sisi ** 3
+
+    def luas_permukaan(self):
+        return 6 * (self.sisi ** 2)
+
+    def info(self):
+        return f"Kubus (s={self.sisi})"
+
+class Balok(BangunRuang):
+    def __init__(self, p, l, t):
+        self.p, self.l, self.t = p, l, t
+
+    def volume(self):
+        return self.p * self.l * self.t
+
+    def luas_permukaan(self):
+        return 2 * (self.p*self.l + self.p*self.t + self.l*self.t)
+
+    def info(self):
+        return f"Balok ({self.p}x{self.l}x{self.t})"
+
+class Tabung(BangunRuang):
+    def __init__(self, r, t):
+        self.r, self.t = r, t
+        self.pi = 3.14
+
+    def volume(self):
+        return self.pi * (self.r**2) * self.t
+
+    def luas_permukaan(self):
+        return 2 * self.pi * self.r * (self.r + self.t)
+
+    def info(self):
+        return f"Tabung (r={self.r}, t={self.t})"
+
+class Bola(BangunRuang):
+    def __init__(self, r):
+        self.r = r
+        self.pi = 3.14
+
+    def volume(self):
+        return (4/3) * self.pi * (self.r**3)
+
+    def luas_permukaan(self):
+        return 4 * self.pi * (self.r**2)
+
+    def info(self):
+        return f"Bola (r={self.r})"
+
+# --- EKSEKUSI ---
+
+# 1. Membuat daftar bangun ruang (List of Objects)
+daftar_bangun = [
+    Kubus(5),
+    Balok(4, 3, 2),
+    Tabung(7, 10),
+    Bola(10),
+    Kubus.dari_volume(64) # Menggunakan Class Method
+]
+
+# 2. Urutkan berdasarkan Volume (Descending) menggunakan Lambda
+daftar_urut = sorted(daftar_bangun, key=lambda x: x.volume(), reverse=True)
+
+# 3. Tampilkan dalam format tabel
+print("="*65)
+print(f"{'No':<3} | {'Jenis Bangun':<25} | {'Volume':<12} | {'Luas Permukaan'}")
+print("-" * 65)
+
+for i, bangun in enumerate(daftar_urut, 1):
+    print(f"{i:<3} | {bangun.info():<25} | {bangun.volume():<12.2f} | {bangun.luas_permukaan():.2f}")
+
+print("="*65)
+
+# 4. Demonstrasi Operator Overloading
+if daftar_bangun[0] > daftar_bangun[1]:
+    print(f"\nInfo: {daftar_bangun[0].info()} lebih besar dari {daftar_bangun[1].info()}")

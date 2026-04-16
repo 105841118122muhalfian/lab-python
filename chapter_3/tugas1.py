@@ -1,56 +1,63 @@
+"""
+==========================================================
+ TUGAS 1 - Sistem Penilaian Akademik
+ Chapter 3: Control Flow & Fungsi
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
+"""
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+# Fungsi hitung_grade(nilai)
+def hitung_grade(nilai):
+    if nilai >= 90:
+        return "A", "Sangat Baik"
+    elif nilai >= 80:
+        return "B", "Baik"
+    elif nilai >= 70:
+        return "C", "Cukup"
+    elif nilai >= 60:
+        return "D", "Kurang"
+    else:
+        return "E", "Sangat Kurang"
 
-import math
+# Fungsi status_kelulusan(grade)
+def status_kelulusan(grade):
+    # Menggunakan logika pengecekan grade yang lulus (A, B, C)
+    if grade in ["A", "B", "C"]:
+        return "LULUS"
+    else:
+        return "TIDAK LULUS"
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# List of tuple (Nama, Nilai)
+mahasiswa = [
+    ("Ahmad Fauzi", 85), ("Siti Rahma", 92), ("Budi Santoso", 55),
+    ("Dina Amalia", 78), ("Eko Saputra", 62), ("Fajri Ramadhan", 95),
+    ("Gita Lestari", 45), ("Hadi Wijaya", 73), ("Indra Kurnia", 88),
+    ("Joko Anwar", 68)
+]
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Variabel penghitung
+jml_lulus = 0
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+print("================== HASIL PENILAIAN AKADEMIK ==================")
+print(f"{'No':<2} | {'Nama':<17} | {'Nilai':<5} | {'Grade':<5} | {'Keterangan':<13} | {'Status'}")
+print("-" * 62)
 
-# ── Perhitungan ──────────────────────────────────────────
+# Perulangan untuk memproses data
+for i, (nama, nilai) in enumerate(mahasiswa, 1):
+    grade, ket = hitung_grade(nilai)
+    status = status_kelulusan(grade)
+    
+# Contoh penggunaan Ternary Operator untuk menghitung jumlah lulus
+    jml_lulus += 1 if status == "LULUS" else 0
+    
+    print(f"{i:>2} | {nama:<17} | {nilai:>5} | {grade:^5} | {ket:<13} | {status}")
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# Hitung statistik
+total = len(mahasiswa)
+jml_tidak_lulus = total - jml_lulus
+persen_lulus = (jml_lulus / total) * 100
+persen_tidak_lulus = (jml_tidak_lulus / total) * 100
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
-
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
-
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
-
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+print("=" * 62)
+print(f"Lulus: {jml_lulus} ({persen_lulus:.1f}%) | Tidak Lulus: {jml_tidak_lulus} ({persen_tidak_lulus:.1f}%)")

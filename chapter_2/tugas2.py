@@ -1,56 +1,79 @@
+"""
+==========================================================
+ TUGAS 2 - Sistem Data Mahasiswa
+ Chapter 2: Struktur Data
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
+"""
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+# Inisialisasi dictionary 5 mahasiswa
+mahasiswa = {
+    "MHS001": {
+        "nama": "Ahmad",
+        "jurusan": "Informatika",
+        "nilai": {"Algoritma": 85, "Basis Data": 90, "Jaringan": 80}
+    },
+    "MHS002": {
+        "nama": "Budi",
+        "jurusan": "Sistem Informasi",
+        "nilai": {"Algoritma": 70, "Basis Data": 75, "Jaringan": 72}
+    },
+    "MHS003": {
+        "nama": "Citra",
+        "jurusan": "Informatika",
+        "nilai": {"Algoritma": 95, "Basis Data": 88, "Jaringan": 92}
+    },
+    "MHS004": {
+        "nama": "Dina",
+        "jurusan": "Teknik Komputer",
+        "nilai": {"Algoritma": 80, "Basis Data": 82, "Jaringan": 85}
+    },
+    "MHS005": {
+        "nama": "Eko",
+        "jurusan": "Informatika",
+        "nilai": {"Algoritma": 65, "Basis Data": 70, "Jaringan": 68}
+    }
+}
 
-import math
+# Tampilkan seluruh data mahasiswa dalam format tabel rapi
+print("-" * 65)
+print(f"{'NIM':<8} | {'Nama':<10} | {'Jurusan':<18} | {'Rata-rata':<8}")
+print("-" * 65)
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# Sambil menampilkan tabel, kita akan hitung rata-rata dan cari yang tertinggi
+nama_tertinggi = ""
+rata_tertinggi = 0
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+for nim, data in mahasiswa.items():
+    # Hitung rata-rata nilai setiap mahasiswa
+    total_nilai = sum(data['nilai'].values())
+    jumlah_matkul = len(data['nilai'])
+    rata_rata = total_nilai / jumlah_matkul
+    
+    print(f"{nim:<8} | {data['nama']:<10} | {data['jurusan']:<18} | {rata_rata:<8.2f}")
+    
+    # Cari mahasiswa dengan rata-rata tertinggi
+    if rata_rata > rata_tertinggi:
+        rata_tertinggi = rata_rata
+        nama_tertinggi = data['nama']
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+print("-" * 65)
+print(f"Mahasiswa dengan nilai tertinggi: {nama_tertinggi} ({rata_tertinggi:.2f})")
 
-# ── Perhitungan ──────────────────────────────────────────
+# Tambahkan 1 mahasiswa baru
+mahasiswa["MHS006"] = {
+    "nama": "Fajri",
+    "jurusan": "Informatika",
+    "nilai": {"Algoritma": 88, "Basis Data": 85, "Jaringan": 90}
+}
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# Dictionary Comprehension: {nama: rata_rata_nilai}
+# Kita hitung ulang untuk semua termasuk mahasiswa baru
+rekap_nilai = {
+    data['nama']: sum(data['nilai'].values()) / len(data['nilai']) 
+    for data in mahasiswa.values()
+}
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
-
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
-
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
-
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+print("\nRekap Nilai (Dict Comprehension):")
+print(rekap_nilai)

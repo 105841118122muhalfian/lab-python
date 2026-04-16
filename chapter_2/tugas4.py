@@ -1,56 +1,60 @@
+"""
+==========================================================
+ TUGAS 4 - Tuple untuk Data Koordinat
+ Chapter 2: Struktur Data
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
+"""
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+# Buat list berisi 5 tuple koordinat (x, y)
+koordinat = [(1, 2), (4, 6), (7, 1), (2, 9), (5, 3)]
+print("Daftar Koordinat:", koordinat)
 
-import math
+# Gunakan tuple unpacking untuk menampilkan setiap koordinat
+print("\nMenampilkan koordinat (Unpacking):")
+for i, (x, y) in enumerate(koordinat, 1):
+    print(f"Lokasi {i}: x = {x}, y = {y}")
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# Fungsi hitung jarak Euclidean (Manual tanpa math)
+# Rumus: d = ((x2-x1)**2 + (y2-y1)**2) ** 0.5
+print("\n--- Analisis Jarak ---")
+def hitung_jarak(p1, p2):
+    return ((p2[0] - p1[0])**2 + (p2[1] - p1[1])**2) ** 0.5
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Cari pasangan titik yang paling dekat
+titik_a, titik_b = None, None
+jarak_terdekat = float('inf') # Set awal ke tak terhingga
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+for i in range(len(koordinat)):
+    for j in range(i + 1, len(koordinat)):
+        d = hitung_jarak(koordinat[i], koordinat[j])
+        if d < jarak_terdekat:
+            jarak_terdekat = d
+            titik_a, titik_b = koordinat[i], koordinat[j]
 
-# ── Perhitungan ──────────────────────────────────────────
+print(f"Pasangan titik terdekat: {titik_a} dan {titik_b}")
+print(f"Jarak: {jarak_terdekat:.2f}")
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# Dictionary dengan tuple sebagai key
+lokasi_dict = {
+    (1, 2): "Rumah",
+    (4, 6): "Kampus Unismuh",
+    (7, 1): "Pasar",
+    (2, 9): "Rumah Sakit",
+    (5, 3): "Kafe"
+}
+print("\nDictionary Lokasi:", lokasi_dict)
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Buktikan list tidak bisa jadi key (Try-Except)
+print("\n--- Pembuktian Hashable ---")
+try:
+    test_dict = {[1, 2]: "Gagal"}
+except TypeError as e:
+    print(f"Error: List tidak bisa jadi key karena: {e}")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
-
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
-
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+try:
+    test_dict = {(1, 2): "Berhasil"}
+    print("Berhasil: Tuple bisa jadi key karena bersifat immutable.")
+except TypeError as e:
+    print(f"Gagal: {e}")

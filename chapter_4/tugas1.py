@@ -1,56 +1,117 @@
+"""
+==========================================================
+ TUGAS 1 - Sistem Perpustakaan
+ Chapter 4: Object-Oriented Programming
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat class Buku dengan atribut: judul, penulis, tahun, isbn, tersedia
+ 2. Implementasikan __str__ dan __repr__ pada class Buku
+ 3. Buat class Perpustakaan dengan atribut: nama, daftar_buku
+ 4. Implementasikan method: tambah_buku, cari_buku (pencarian parsial),
+    pinjam_buku (by isbn), kembalikan_buku (by isbn), tampilkan_semua
+ 5. Buat minimal 5 objek Buku dan demonstrasikan semua method
 
-import math
+ Konsep yang dipelajari:
+ - Membuat class dan __init__
+ - Method __str__ dan __repr__
+ - Atribut instance dan default value
+ - Interaksi antar objek (Perpustakaan memiliki list Buku)
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Tugas 1 -- Sistem Perpustakaan (tugas_01.py)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+class Buku:
+    # Implementasi class Buku dengan atribut yang diminta
+    def __init__(self, judul, penulis, tahun, isbn):
+        self.judul = judul
+        self.penulis = penulis
+        self.tahun = tahun
+        self.isbn = isbn
+        self.tersedia = True  # Default tersedia
 
-# ── Perhitungan ──────────────────────────────────────────
+    # Implementasi __str__ untuk tampilan user-friendly
+    def __str__(self):
+        status = "Tersedia" if self.tersedia else "Dipinjam"
+        return f"{self.judul} oleh {self.penulis} ({status})"
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+    # Implementasi __repr__ untuk keperluan debugging/internal
+    def __repr__(self):
+        return f"Buku('{self.judul}', '{self.isbn}')"
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+class Perpustakaan:
+    # Implementasi class Perpustakaan
+    def __init__(self, nama):
+        self.nama = nama
+        self.daftar_buku = []
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+    def tambah_buku(self, buku):
+        self.daftar_buku.append(buku)
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+    def cari_buku(self, judul):
+        print(f"\n--- Hasil Pencarian Judul: '{judul}' ---")
+        hasil = [b for b in self.daftar_buku if judul.lower() in b.judul.lower()]
+        if not hasil:
+            print("Buku tidak ditemukan.")
+        else:
+            for b in hasil:
+                print(f"- {b}")
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+    def pinjam_buku(self, isbn):
+        for b in self.daftar_buku:
+            if b.isbn == isbn:
+                if b.tersedia:
+                    b.tersedia = False
+                    print(f"\nBerhasil meminjam: {b.judul}")
+                    return
+                else:
+                    print(f"\nMaaf, buku '{b.judul}' sedang dipinjam.")
+                    return
+        print("\nISBN tidak ditemukan.")
+
+    def kembalikan_buku(self, isbn):
+        for b in self.daftar_buku:
+            if b.isbn == isbn:
+                b.tersedia = True
+                print(f"\nBerhasil mengembalikan: {b.judul}")
+                return
+        print("\nISBN tidak ditemukan.")
+
+    def tampilkan_semua(self):
+        print(f"\n{'='*12} {self.nama.upper()} {'='*12}")
+        print(f"{'No':<2} | {'Judul':<22} | {'Penulis':<15} | {'Tahun':<5} | {'Status'}")
+        print(f"{'-'*3}+{'-'*24}+{'-'*17}+{'-'*7}+{'-'*10}")
+        
+        tersedia_count = 0
+        for i, b in enumerate(self.daftar_buku, 1):
+            status = "Tersedia" if b.tersedia else "Dipinjam"
+            if b.tersedia: tersedia_count += 1
+            print(f"{i:<2} | {b.judul[:22]:<22} | {b.penulis[:15]:<15} | {b.tahun:<5} | {status}")
+        
+        print(f"{'='*55}")
+        print(f"Total: {len(self.daftar_buku)} buku | Tersedia: {tersedia_count} | Dipinjam: {len(self.daftar_buku) - tersedia_count}")
+
+# --- Demonstrasi Sistem Perpustakaan ---
+
+# Buat objek Perpustakaan
+perpus = Perpustakaan("Perpustakaan Unismuh Makassar")
+
+# Tambahkan 5 objek buku
+perpus.tambah_buku(Buku("Algoritma & Pemrograman", "Rinaldi Munir", 2016, "978-1"))
+perpus.tambah_buku(Buku("Basis Data", "Fathansyah", 2018, "978-2"))
+perpus.tambah_buku(Buku("Machine Learning", "Tom Mitchell", 2020, "978-3"))
+perpus.tambah_buku(Buku("Clean Code", "Robert Martin", 2008, "978-4"))
+perpus.tambah_buku(Buku("Python for Data Science", "Jake VanderPlas", 2016, "978-5"))
+
+# Demonstrasi method
+perpus.tampilkan_semua()
+perpus.pinjam_buku("978-2") # Pinjam Basis Data
+perpus.pinjam_buku("978-3") # Pinjam Machine Learning
+perpus.tampilkan_semua()
+perpus.cari_buku("Python")
+perpus.kembalikan_buku("978-2")
+perpus.tampilkan_semua()

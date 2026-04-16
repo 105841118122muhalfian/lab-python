@@ -1,56 +1,89 @@
+"""
+==========================================================
+ TUGAS 3 - Kalkulator Serbaguna
+ Chapter 3: Control Flow & Fungsi
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat fungsi kalkulator(a, b, operasi="+") dengan default param
+ 2. Tangani pembagian dengan nol
+ 3. Buat fungsi statistik(*args) -> dict {min, max, sum, mean, count}
+ 4. Buat fungsi format_output(**kwargs) -> cetak key: value
+ 5. Demonstrasikan lambda dengan map() (kuadrat)
+ 6. Demonstrasikan lambda dengan filter() (bilangan genap)
+ 7. Demonstrasikan lambda dengan sorted() (sort list of tuple)
+==========================================================
+"""
 
-import math
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+# Tugas 3 -- Kalkulator Serbaguna (tugas_03.py)
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Fungsi Kalkulator dengan Default Parameter
+def kalkulator(a, b, operasi="+"):
+    if operasi == "+":
+        return a + b
+    elif operasi == "-":
+        return a - b
+    elif operasi == "*":
+        return a * b
+    elif operasi == "/":
+# Tangani pembagian dengan nol
+        return "Error: Pembagian nol" if b == 0 else a / b
+    elif operasi == "//":
+        return "Error: Pembagian nol" if b == 0 else a // b
+    elif operasi == "%":
+        return a % b
+    elif operasi == "**":
+        return a ** b
+    else:
+        return "Operasi tidak dikenal"
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# Fungsi Statistik menggunakan *args
+def statistik(*args):
+    if not args:
+        return None
+    # Hitung manual tanpa library
+    total = sum(args)
+    count = len(args)
+    return {
+        "min": min(args),
+        "max": max(args),
+        "sum": total,
+        "mean": total / count,
+        "count": count
+    }
 
-# ── Perhitungan ──────────────────────────────────────────
+# Fungsi Format Output menggunakan **kwargs
+def format_output(**kwargs):
+    print("\n--- FORMATTED DATA ---")
+    for key, value in kwargs.items():
+        print(f"{key.capitalize():<10}: {value}")
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# --- DEMONSTRASI ---
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Kalkulator
+print("===== KALKULATOR =====")
+print(f"8 + 2  = {kalkulator(8, 2)}") # Menggunakan default +
+print(f"8 ** 2 = {kalkulator(8, 2, '**')}")
+print(f"5 / 0  = {kalkulator(5, 0, '/')}")
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+# Statistik
+hasil_stat = statistik(10, 20, 30, 40, 50)
+format_output(judul="Hasil Statistik", **hasil_stat)
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+# Lambda dengan map() (Kuadrat)
+angka = [1, 2, 3, 4, 5]
+kuadrat = list(map(lambda x: x**2, angka))
+print(f"\nKuadrat {angka} : {kuadrat}")
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# Lambda dengan filter() (Genap)
+genap = list(filter(lambda x: x % 2 == 0, angka))
+print(f"Bilangan Genap  : {genap}")
+
+# Lambda dengan sorted() (Urutkan Tuple berdasarkan Nilai)
+data_mhs = [("Nurul", 85), ("Habibah", 92), ("Ciko", 78)]
+# Mengurutkan berdasarkan elemen kedua (nilai) secara descending
+urut_nilai = sorted(data_mhs, key=lambda x: x[1], reverse=True)
+print(f"Urut Nilai (Desc): {urut_nilai}")

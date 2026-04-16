@@ -1,56 +1,83 @@
+"""
+==========================================================
+ TUGAS 1 - Analisis Statistik dengan NumPy
+ Chapter 5: NumPy & Pandas
+ Laboratorium Python & Dasar AI
+ Universitas Muhammadiyah Makassar
+==========================================================
 
-# TUGAS 4 - Menghitung Luas & Keliling (tugas_04.py)
-# Chapter 1: Dasar Python
-# Laboratorium Python & Dasar AI
-# Universitas Muhammadiyah Makassar
+ Instruksi:
+ 1. Buat array 30 nilai mahasiswa (acak 40-100, seed=42)
+ 2. Hitung statistik dasar: mean, median, std, max/min
+ 3. Temukan indeks nilai tertinggi dan terendah (argmax/argmin)
+ 4. Hitung jumlah mahasiswa yang lulus (nilai >= 70)
+ 5. Lakukan normalisasi Min-Max (skala 0-1)
+ 6. Lakukan normalisasi Z-Score
+ 7. Reshape array menjadi 6x5, hitung rata-rata per baris & kolom
+ 8. Tampilkan semua hasil dalam format terstruktur
 
-import math
+ Referensi:
+ - Min-Max: (x - min) / (max - min)
+ - Z-Score: (x - mean) / std
+==========================================================
+"""
 
-# ── Definisi Dimensi & Konstanta ────────────────────────
-PI = 3.14159
+import numpy as np
 
-# Dimensi Bangun Datar
-sisi_persegi = 5
-panjang_pp   = 8
-lebar_pp     = 4
-jari_lingkaran = 7
-alas_segitiga  = 6
-tinggi_segitiga = 8
-sisi_miring_segitiga = 10 # Untuk keliling (asumsi siku-siku)
+# Menentukan seed agar hasil angka acaknya selalu sama (sesuai instruksi)
+np.random.seed(42)
 
-# Variabel penampung total luas (menggunakan assignment += nantinya)
-total_luas = 0
+# 1. Buat array NumPy berisi nilai ujian 30 mahasiswa
+nilai = np.random.randint(40, 100, 30)
 
-# ── Perhitungan ──────────────────────────────────────────
+print("===== ANALISIS STATISTIK NILAI MAHASISWA =====")
+print(f"Data (30 mahasiswa): {nilai}\n")
 
-# Persegi
-luas_p = sisi_persegi * sisi_persegi
-kel_p  = 4 * sisi_persegi
-total_luas += luas_p
+# 2. Statistik Deskriptif
+mean = np.mean(nilai)
+median = np.median(nilai)
+std_dev = np.std(nilai)
+max_val = np.max(nilai)
+max_idx = np.argmax(nilai)
+min_val = np.min(nilai)
+min_idx = np.argmin(nilai)
 
-# Persegi Panjang
-luas_pp = panjang_pp * lebar_pp
-kel_pp  = 2 * (panjang_pp + lebar_pp)
-total_luas += luas_pp
+# Hitung jumlah lulus (>= 70)
+lulus_mask = nilai >= 70
+jml_lulus = np.sum(lulus_mask)
+persen_lulus = (jml_lulus / len(nilai)) * 100
 
-# Lingkaran
-luas_l = PI * (jari_lingkaran ** 2)
-kel_l  = 2 * PI * jari_lingkaran
-total_luas += luas_l
+print("--- Statistik Deskriptif ---")
+print(f"Mean    : {mean:.2f}")
+print(f"Median  : {median:.2f}")
+print(f"Std Dev : {std_dev:.2f}")
+print(f"Min     : {min_val} (index: {min_idx})")
+print(f"Max     : {max_val} (index: {max_idx})")
+print(f"Lulus   : {jml_lulus} dari {len(nilai)} ({persen_lulus:.1f}%)\n")
 
-# Segitiga
-luas_s = 0.5 * alas_segitiga * tinggi_segitiga
-kel_s  = alas_segitiga + tinggi_segitiga + sisi_miring_segitiga
-total_luas += luas_s
+# 3. Normalisasi Min-Max (0-1)
+# Rumus: (x - min) / (max - min)
+norm_minmax = (nilai - min_val) / (max_val - min_val)
 
-# ── Tampilkan Hasil dalam Format Tabel ───────────────────
-print("=" * 55)
-print(f"{'BANGUN DATAR':<20} | {'LUAS':<15} | {'KELILING':<15}")
-print("-" * 55)
-print(f"{'Persegi':<20} | {luas_p:<15.2f} | {kel_p:<15.2f}")
-print(f"{'Persegi Panjang':<20} | {luas_pp:<15.2f} | {kel_pp:<15.2f}")
-print(f"{'Lingkaran':<20} | {luas_l:<15.2f} | {kel_l:<15.2f}")
-print(f"{'Segitiga':<20} | {luas_s:<15.2f} | {kel_s:<15.2f}")
-print("-" * 55)
-print(f"{'TOTAL LUAS SEMUA BANGUN':<20} : {total_luas:.2f}")
-print("=" * 55)
+# 4. Normalisasi Z-Score
+# Rumus: (x - mean) / std_dev
+norm_zscore = (nilai - mean) / std_dev
+
+print("--- Normalisasi ---")
+print(f"Min-Max (5 pertama): {norm_minmax[:5]}")
+print(f"Z-Score (5 pertama): {norm_zscore[:5]}\n")
+
+# 5. Reshape menjadi array 2D (6 baris, 5 kolom)
+data_kelas = nilai.reshape(6, 5)
+
+print("--- Rata-rata per Kelas (reshape 6x5) ---")
+# 6. Hitung rata-rata per baris (axis=1)
+rata_per_kelas = np.mean(data_kelas, axis=1)
+for i, r in enumerate(rata_per_kelas, 1):
+    print(f"Kelas {i} : {r:.2f}")
+
+# Hitung rata-rata per kolom (axis=0)
+rata_per_matkul = np.mean(data_kelas, axis=0)
+print("\n--- Rata-rata per Mata Ujian (Kolom) ---")
+for i, r in enumerate(rata_per_matkul, 1):
+    print(f"Ujian {i} : {r:.2f}")
